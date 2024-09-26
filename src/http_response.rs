@@ -1,7 +1,7 @@
-use std::collections::HashMap;
-use std::fmt::{Display, Formatter};
 use crate::http_status_code::HttpStatusCode;
 use crate::http_version::HttpVersion;
+use std::collections::HashMap;
+use std::fmt::{Display, Formatter};
 
 #[derive(Clone)]
 pub struct HttpResponse {
