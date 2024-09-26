@@ -11,7 +11,7 @@ mod http_status_code;
 mod http_version;
 mod router;
 
-fn handle_connection(mut stream: TcpStream) {
+async fn handle_connection(mut stream: TcpStream) {
     let mut reader = BufReader::new(stream.try_clone().unwrap());
     let mut request_buffer = String::new();
     reader.read_line(&mut request_buffer).unwrap();
@@ -25,7 +25,8 @@ fn handle_connection(mut stream: TcpStream) {
     stream.write_all(serialized).unwrap();
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let addr = String::from("127.0.0.1:4221");
     let listener = TcpListener::bind(addr.clone()).unwrap();
     println!("Server listening on http://{}.", addr);
@@ -35,7 +36,7 @@ fn main() {
             Ok(stream) => {
                 let peer = stream.peer_addr().unwrap();
                 println!("Incoming connection from [{}] accepted.", peer);
-                handle_connection(stream);
+                tokio::spawn(handle_connection(stream));
             }
             Err(e) => {
                 println!("error: {}", e);
