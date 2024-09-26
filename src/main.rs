@@ -11,7 +11,12 @@ mod http_status_code;
 mod http_version;
 mod router;
 
-async fn handle_connection(mut stream: TcpStream) {
+#[derive(Clone, Debug)]
+pub struct ServerConfig {
+    pub directory: Option<String>,
+}
+
+async fn handle_connection(server_config: ServerConfig, mut stream: TcpStream) {
     let mut reader = BufReader::new(stream.try_clone().unwrap());
     let mut request_buffer = String::new();
     reader.read_line(&mut request_buffer).unwrap();
@@ -19,14 +24,19 @@ async fn handle_connection(mut stream: TcpStream) {
         reader.read_line(&mut request_buffer).unwrap();
     }
     let request = request_buffer.parse::<HttpRequest>().unwrap();
-    println!("{:?}", request);
-    let response = router(&request).to_string();
+    let response = router(&server_config, &request).to_string();
     let serialized = response.as_bytes();
     stream.write_all(serialized).unwrap();
 }
 
 #[tokio::main]
 async fn main() {
+    let args: Vec<String> = std::env::args().collect();
+    let mut config = ServerConfig { directory: None };
+    if args.len() == 3 && args[1] == "--directory" {
+        config = ServerConfig { directory: Some(args[2].clone()) }
+    }
+
     let addr = String::from("127.0.0.1:4221");
     let listener = TcpListener::bind(addr.clone()).unwrap();
     println!("Server listening on http://{}.", addr);
@@ -36,7 +46,7 @@ async fn main() {
             Ok(stream) => {
                 let peer = stream.peer_addr().unwrap();
                 println!("Incoming connection from [{}] accepted.", peer);
-                tokio::spawn(handle_connection(stream));
+                tokio::spawn(handle_connection(config.clone(), stream));
             }
             Err(e) => {
                 println!("error: {}", e);
