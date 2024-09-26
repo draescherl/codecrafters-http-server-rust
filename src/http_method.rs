@@ -1,7 +1,7 @@
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum HttpMethod {
     Get,
     Post,
@@ -24,7 +24,7 @@ impl FromStr for HttpMethod {
         match s {
             "GET" => Ok(HttpMethod::Get),
             "POST" => Ok(HttpMethod::Post),
-            _ => Err(format!("Could not parse [{}] into an HttpMethod.", s))
+            _ => Err(format!("Could not parse [{}] into an HttpMethod.", s)),
         }
     }
 }

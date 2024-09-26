@@ -1,3 +1,4 @@
+use crate::http_headers::HttpHeaders;
 use crate::http_status_code::HttpStatusCode;
 use crate::http_version::HttpVersion;
 use std::collections::HashMap;
@@ -7,8 +8,8 @@ use std::fmt::{Display, Formatter};
 pub struct HttpResponse {
     pub version: HttpVersion,
     pub status_code: HttpStatusCode,
-    pub headers: HashMap<String, String>,
-    pub body: Vec<u8>,
+    pub headers: HttpHeaders,
+    pub body: Vec<u8>, // TODO: make this a slice
 }
 
 impl HttpResponse {
