@@ -4,6 +4,10 @@ use crate::http_version::HttpVersion;
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 
+enum ResponseHeaders {
+    
+}
+
 #[derive(Clone)]
 pub struct HttpResponse {
     pub version: HttpVersion,
